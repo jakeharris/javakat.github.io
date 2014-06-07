@@ -13,23 +13,33 @@ var width = vpwidth(),
     game,
     inputs = [],
     paused = false,
+    destroyStillAirsThroughIndex = 0,
     upgrades = [];
 
 ctx.font = "22pt Cascada";
 
 var clear = function () {
-        width = vpwidth();
-        height = vpheight();
-        setGameDimensions(width, height);
-        if(c.width != width || c.height != height) {
-          c.width = width;
-          c.height = height;
-          BLOCK_WIDTH = Math.floor(width / 60);
-          BLOCK_HEIGHT = BLOCK_WIDTH;
+        var dim = setGameDimensions(vpwidth(), vpheight(), BLOCK_WIDTH, BLOCK_HEIGHT);
+        BLOCK_WIDTH = dim.block_width;
+        BLOCK_HEIGHT = dim.block_height;
+        width = dim.width - 2 * BLOCK_WIDTH;
+        height = dim.height - 2 * BLOCK_HEIGHT;
+  
+        if(c.width != vpwidth() || c.height != vpheight()) {
+          c.width = vpwidth();
+          c.height = vpheight();
         }
+  
+        ctx.fillstyle = '#282828';
+        ctx.textAlign = 'center';
+        ctx.beginPath();
+        ctx.rect(0, 0, vpwidth(), vpheight());
+        ctx.closePath();
+        ctx.fill();
+  
         ctx.fillStyle = '#fff';
         ctx.beginPath();
-        ctx.rect(0, 0, width, height);
+        ctx.rect(BLOCK_WIDTH, BLOCK_HEIGHT, width, height);
         ctx.closePath();
         ctx.fill();
         /*if(cur === TimeAttackScenes.SNAKE) {
@@ -68,17 +78,33 @@ var loop = function () {
     };
 
 var renderPause = function () {
+        var dim = setGameDimensions(vpwidth(), vpheight(), BLOCK_WIDTH, BLOCK_HEIGHT);
+        width = dim.width;
+        height = dim.height;
+        BLOCK_WIDTH = dim.block_width;
+        BLOCK_HEIGHT = dim.block_height;
+  
+        if(c.width != vpwidth() || c.height != vpheight()) {
+          c.width = vpwidth();
+          c.height = vpheight();
+        }
+  
+        ctx.fillstyle = '#282828';
+        ctx.beginPath();
+        ctx.rect(0, 0, vpwidth(), vpheight());
+        ctx.closePath();
+        ctx.fill();
+  
         ctx.fillStyle = "rgba(0, 0, 0, .5)";
         ctx.beginPath();
-        ctx.rect(0, 0, c.width, c.height);
+        ctx.rect(0, 0, width, height);
         ctx.closePath();
         ctx.fill();
   
         ctx.fillStyle = "#fff";
         ctx.beginPath();
-        ctx.fillText('Press P or ESC to continue playing.', c.width*3/8, c.height/2); //FIXME
-        ctx.fillText('Press Left Ctrl to enter the shop.', c.width*3/8, c.height/2 + 32);
-        ctx.fillText('Press Q to quit.', c.width*3/8, c.height/2 + 64);
+        ctx.fillText('Press P or ESC to continue playing.', width*3/8, height/2); //FIXME
+        ctx.fillText('Press Q to quit.', width*3/8, height/2 + 64);
         ctx.closePath();
 }
 
